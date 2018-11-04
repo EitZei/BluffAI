@@ -1,8 +1,8 @@
 local function totalNumberOfDices (game)
   diceCount = 0
 
-  for k, v in pairs(game.playerDices) do
-    diceCount = diceCount + #v
+  for k, v in pairs(game.playerDiceCounts) do
+    diceCount = diceCount + v
   end
 
   return diceCount
@@ -16,10 +16,10 @@ local function getAvailableStates (game)
   end
 end
 
-local function rollDices (playerDiceCounts)
+local function rollDices (game)
   playerDices = {}
 
-  for i=1, #playerDiceCounts do
+  for i=1, #game.playerDiceCounts do
     playerDices[i] = {}
     for j=1, playerDiceCounts[i] do
       playerDices[i][j] = global.diceValues[math.random(1, #global.diceValues)]

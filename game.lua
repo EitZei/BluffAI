@@ -36,7 +36,7 @@ local function initPlayerStrategies(numberOfPlayers)
   return playerStrategies
 end
 
-local function initPlayerDiceCounts(numberOfPlayers)
+local function initPlayerDiceCounts (numberOfPlayers)
   playerDiceCounts = {}
 
   for i=1,numberOfPlayers do
@@ -44,6 +44,22 @@ local function initPlayerDiceCounts(numberOfPlayers)
   end
 
   return playerDiceCounts
+end
+
+local function playAsPlayer (game)
+  -- Create copy of a game but without the hands of other players
+
+  forPlayer = {
+    board = game.board,
+    playerInTurn = game.playerInTurn,
+    playerDiceCounts = game.playerDiceCounts,
+    promise = game.promise,
+    playerDices = {}
+  }
+
+  forPlayer.playerDices[game.playerInTurn] = game.playerDices[game.playerInTurn]
+
+  return game.playerStrategies[game.playerInTurn](forPlayer)
 end
 
 game = {
@@ -59,13 +75,13 @@ game = {
 print("\n##### Game starts #####")
 while utils.moreThanOneHasDice(game) do
   if game.promise == nil then
-    game.playerDices = utils.rollDices(game.playerDiceCounts)
+    game.playerDices = utils.rollDices(game)
     print("\n## New round ##")
     printGameState(game)
   end
 
   -- Execute player strategy
-  nextPromise = game.playerStrategies[game.playerInTurn](game)
+  nextPromise = playAsPlayer(game)
 
   -- Call or raise?
   if nextPromise == nil then
