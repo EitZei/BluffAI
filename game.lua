@@ -94,9 +94,9 @@ while utils.moreThanOneHasDice(game) do
       -- Everyone except previous player loses one
       print("Communist attack! Everyone else than the one who promised loses one dice")
       for k, v in pairs(game.playerDiceCounts) do
-        if (k ~= game.previousPlayerInTurn) then
-          -- Note that communist cannot take the last dice
-          game.playerDiceCounts[k] = math.max(1, game.playerDiceCounts[k] - 1)
+        -- Note that communist cannot take the last dice
+        if (k ~= game.previousPlayerInTurn) and game.playerDiceCounts[k] > 1 then
+          game.playerDiceCounts[k] = game.playerDiceCounts[k] - 1
         end
       end
 
