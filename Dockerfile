@@ -2,6 +2,9 @@ FROM mhndev/docker-lua
 
 RUN mkdir /app
 
-COPY main.lua /app/main.lua
+WORKDIR /app
 
-CMD ["lua", "/app/main.lua"]
+COPY lib/ /app/lib
+COPY game.lua /app/game.lua
+
+CMD ["lua", "/app/game.lua"]

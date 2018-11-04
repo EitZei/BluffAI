@@ -6,7 +6,7 @@ Enjoy the great dice game Bluff with quite stupid bots.
 - Lua 5.3 (or Docker)
 
 ## Run
-`lua main.lua``
+`lua game.lua``
 
 ### Docker
 `docker build -t bluff-ai .`
