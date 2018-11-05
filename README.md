@@ -2,15 +2,20 @@
 
 Enjoy the great dice game Bluff with quite stupid bots.
 
+You can either play by yourself or watch the bots play.
+
 ## Dependencies
 - Lua 5.3 (or Docker)
 
 ## Run
-`lua game.lua``
+
+`lua main.lua` or to just watch the bots play `lua main.lua only-bots`
 
 ### Docker
+
 `docker build -t bluff-ai .`
-`docker run bluff-ai`
+
+`docker run -it bluff-ai`
 
 ## Contributing
 

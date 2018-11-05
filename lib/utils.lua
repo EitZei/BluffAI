@@ -41,7 +41,7 @@ local function moreThanOneHasDice (game)
   return false
 end
 
-local function countDicesOfPromisedValue(game)
+local function countDicesOfPromisedValue (game)
   value = game.promise.value
 
   count = 0
@@ -57,8 +57,18 @@ local function countDicesOfPromisedValue(game)
   return count
 end
 
-local function currentPlayerHasDices(game)
+local function currentPlayerHasDices (game)
   return game.playerDiceCounts[game.playerInTurn] > 0
+end
+
+local function clearScreen ()
+  if not os.execute("clear") then
+    os.execute("cls")
+  elseif not os.execute("cls") then
+    for i = 1,25 do
+        print("\n\n")
+    end
+  end
 end
 
 return {
@@ -68,4 +78,5 @@ return {
   moreThanOneHasDice = moreThanOneHasDice,
   countDicesOfPromisedValue = countDicesOfPromisedValue,
   currentPlayerHasDices = currentPlayerHasDices,
+  clearScreen = clearScreen
 }
