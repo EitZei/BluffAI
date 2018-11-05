@@ -76,7 +76,7 @@ print("\n##### Game starts #####")
 while utils.moreThanOneHasDice(game) do
   if game.promise == nil then
     game.playerDices = utils.rollDices(game)
-    print("\n## New round ##")
+    print("\n## New round (" .. utils.totalNumberOfDices(game) .. ") ##")
     printGameState(game)
   end
 
@@ -85,6 +85,7 @@ while utils.moreThanOneHasDice(game) do
 
   -- Call or raise?
   if nextPromise == nil then
+    print("Player " .. game.playerInTurn .. " calls")
     -- Count dices..
     actualDices = utils.countDicesOfPromisedValue(game)
 
@@ -95,7 +96,7 @@ while utils.moreThanOneHasDice(game) do
       print("Communist attack! Everyone else than the one who promised loses one dice")
       for k, v in pairs(game.playerDiceCounts) do
         -- Note that communist cannot take the last dice
-        if (k ~= game.previousPlayerInTurn) and game.playerDiceCounts[k] > 1 then
+        if (k ~= game.previousPlayerInTurn) and (k == game.playerInTurn or game.playerDiceCounts[k] > 1) then
           game.playerDiceCounts[k] = game.playerDiceCounts[k] - 1
         end
       end
@@ -103,16 +104,24 @@ while utils.moreThanOneHasDice(game) do
       game.playerInTurn = game.previousPlayerInTurn
     elseif actualDices > game.promise.amount then
       -- The player who called loses the difference
-      diff = actualDices - game.promise.amount
+      diff = math.min(game.playerDiceCounts[game.playerInTurn], actualDices - game.promise.amount)
       print("Bad call. Player " .. game.playerInTurn .. " loses " .. diff .. " dices")
-      game.playerDiceCounts[game.playerInTurn] = math.max(0, game.playerDiceCounts[game.playerInTurn] - diff)
+      game.playerDiceCounts[game.playerInTurn] = game.playerDiceCounts[game.playerInTurn] - diff
+
+      if game.playerDiceCounts[game.playerInTurn] == 0 then
+        print("Player " .. game.playerInTurn .. " is out of game!")
+      end
 
       game.playerInTurn = game.previousPlayerInTurn
     else
       -- Previous player loses the difference
-      diff =  game.promise.amount - actualDices
+      diff = math.min(game.playerDiceCounts[game.previousPlayerInTurn], game.promise.amount - actualDices)
       print("Bad promise. Player " .. game.previousPlayerInTurn .. " loses " .. diff .. " dices")
-      game.playerDiceCounts[game.previousPlayerInTurn] = math.max(0, game.playerDiceCounts[game.previousPlayerInTurn] - diff)
+      game.playerDiceCounts[game.previousPlayerInTurn] = game.playerDiceCounts[game.previousPlayerInTurn] - diff
+
+      if game.playerDiceCounts[game.previousPlayerInTurn] == 0 then
+        print("Player " .. game.previousPlayerInTurn .. " is out of game!")
+      end
 
       game.playerInTurn = game.playerInTurn
     end
@@ -120,6 +129,7 @@ while utils.moreThanOneHasDice(game) do
     game.promise = nil
     game.previousPlayerInTurn = nil
   else
+    print("Player " .. game.playerInTurn .. " promises " .. nextPromise.amount .. " of " .. nextPromise.value)
     game.promise = nextPromise
     game.previousPlayerInTurn = game.playerInTurn
 

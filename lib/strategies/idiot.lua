@@ -1,7 +1,11 @@
 global = require "lib/global"
 utils = require "lib/utils"
 
-local function countDistribution (ownDices, totalDiceCount)
+local function countDistribution (ownDices)
+  ownDices = game.playerDices[game.playerInTurn]
+
+  totalDiceCount = utils.totalNumberOfDices(game)
+
   unknownDiceCount = totalDiceCount - #ownDices
 
   distribution = {}
@@ -33,8 +37,7 @@ local function printPropabilities (propabilities)
 end
 
 local function play (game)
-  totalDiceCount = utils.totalNumberOfDices(game)
-  playerPropabilities = countDistribution(game.playerDices[game.playerInTurn], totalDiceCount)
+  playerPropabilities = countDistribution(game)
   --print("\nPlayer " .. game.playerInTurn .. " sees propabilities")
   --printPropabilities(playerPropabilities)
 
@@ -50,13 +53,10 @@ local function play (game)
   -- Go for the largest that you can estimate. If that is not available
   -- take 50/50 on minimal raise or call.
   if largest ~= nil then
-    print("Player " .. game.playerInTurn .. " promises " .. largest.amount .. " of " .. largest.value)
     return largest
-  elseif math.random() > 0.5 then
-    print("Player " .. game.playerInTurn .. " promises " .. availableStates[1].amount .. " of " .. availableStates[1].value)
+  elseif math.random() > 0.5 or game.promise == nil then
     return availableStates[1]
   else
-    print("Player " .. game.playerInTurn .. " calls")
     return nil
   end
 end
