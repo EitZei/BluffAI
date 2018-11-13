@@ -34,7 +34,7 @@ end
 
 local function play (game)
   print()
-  print("Your turn!")
+  print("Your turn player" .. game.playerInTurn .. "!")
   printNextStates(game)
   print()
 

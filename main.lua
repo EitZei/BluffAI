@@ -9,7 +9,8 @@ onlyBots = false
 playParams = {
   numberOfPlayers = 6,
   numberOfDices = 5,
-  humanPlayer = nil
+  gameStyle = nil,
+  thePlayers = nil
 }
 
 for k, v in pairs(arg) do
@@ -17,6 +18,7 @@ for k, v in pairs(arg) do
 end
 
 if onlyBots then
+  playParams.gameStyle = global.gameStyle.onlyBots;
   game.play(playParams)
   return
 end
@@ -35,11 +37,32 @@ end
 print()
 
 if selection == 2 then
-  print("Not implemented. Sorry about that.")
-elseif selection == 1 then
-  playParams.humanPlayer = math.random(1, playParams.numberOfPlayers)
-  print("You will be player " .. playParams.humanPlayer .. ".")
-  print()
+  playParams.gameStyle = global.gameStyle.botVsHumans;
 
-  game.play(playParams)
+  io.write("How many players: ")
+  playParams.numberOfPlayers = io.read("*number")
+  io.read()
+
+  io.write("How many dices per player: ")
+  playParams.numberOfDices = io.read("*number")
+  io.read()
+
+  while
+    playParams.thePlayer == nil or
+    playParams.thePlayer < 1 or
+    playParams.thePlayer > playParams.numberOfPlayers do
+
+    io.write("Whats your position (1.." .. playParams.numberOfPlayers .. "): ")
+    playParams.thePlayer = io.read("*number")
+    io.read()
+  end
+  print()
+elseif selection == 1 then
+  playParams.gameStyle = global.gameStyle.humanVsBots;
+
+  playParams.thePlayer = math.random(1, playParams.numberOfPlayers)
+  print("You will be player " .. playParams.thePlayer .. ".")
+  print()
 end
+
+game.play(playParams)

@@ -22,7 +22,20 @@ local function rollDices (game)
   for i=1, #game.playerDiceCounts do
     playerDices[i] = {}
     for j=1, playerDiceCounts[i] do
-      playerDices[i][j] = global.diceValues[math.random(1, #global.diceValues)]
+      if game.gameStyle == global.gameStyle.botVsHumans and game.thePlayer == i then
+        dice = nil
+
+        while dice == nil or dice < 1 or dice > 6 do
+          io.write("Dice value (6 = star): ")
+          dice = io.read("*number")
+          io.read()
+        end
+
+        if dice == 6 then dice = global.star end
+        playerDices[i][j] = dice
+      else
+        playerDices[i][j] = global.diceValues[math.random(1, #global.diceValues)]
+      end
     end
   end
 
@@ -44,12 +57,18 @@ end
 local function countDicesOfPromisedValue (game)
   value = game.promise.value
 
-  count = 0
+  if game.gameStyle == global.gameStyle.botVsHumans then
+    io.write("How many dices of value " .. value .. " were there? ")
+    count = io.read("*number")
+    io.read()
+  else
+    count = 0
 
-  for k1, player in pairs(game.playerDices) do
-    for k2, dice in pairs(player) do
-      if dice == value or dice == global.star then
-        count = count + 1
+    for k1, player in pairs(game.playerDices) do
+      for k2, dice in pairs(player) do
+        if dice == value or dice == global.star then
+          count = count + 1
+        end
       end
     end
   end
