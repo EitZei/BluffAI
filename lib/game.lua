@@ -8,7 +8,7 @@ local function printGameState (game, showAllAnyways)
   io.write("\n")
   for playerNo, playerDice in pairs(game.playerDices) do
     io.write("Player " .. playerNo .. ": ")
-    if showAllAnyways or playParams.humanPlayer == nil or playParams.humanPlayer == playerNo then
+    if showAllAnyways or playParams.thePlayer == nil or playParams.thePlayer == playerNo then
       for i, dice in pairs(playerDice) do io.write(dice .. " ") end
     else
       io.write(game.playerDiceCounts[playerNo] .. " dices")
@@ -28,16 +28,29 @@ local function initPlayerStrategies(playParams)
   playerStrategies = {}
 
   for i=1, playParams.numberOfPlayers do
-    if playParams.humanPlayer ~= nil and i == playParams.humanPlayer then
-      strategyName = "human"
-      strategy = strategies.humanStrategy
+    if playParams.gameStyle == global.gameStyle.humanVsBots then
+      if playParams.thePlayer ~= nil and i == playParams.thePlayer then
+        strategyName = "human"
+        strategy = strategies.humanStrategy
+      else
+        strategyName = strategyNames[math.random(1, #strategyNames)]
+        strategy = strategies.aiStrategies[strategyName]
+      end
+    elseif playParams.gameStyle == global.gameStyle.botVsHumans then
+      if playParams.thePlayer ~= nil and i ~= playParams.thePlayer then
+        strategyName = "human"
+        strategy = strategies.humanStrategy
+      else
+        strategyName = "nerdy"
+        strategy = strategies.aiStrategies[strategyName]
+      end
     else
       strategyName = strategyNames[math.random(1, #strategyNames)]
       strategy = strategies.aiStrategies[strategyName]
     end
 
     playerStrategies[i] = strategy
-    --print("Player " .. i .. " will play with strategy \"" .. strategyName .. "\"")
+    print("Player " .. i .. " will play with strategy \"" .. strategyName .. "\"")
   end
 
   return playerStrategies
@@ -77,13 +90,15 @@ local function play (playParams)
     playerDiceCounts = initPlayerDiceCounts(playParams),
     promise = nil,
     playerDices = nil,
-    playerStrategies = initPlayerStrategies(playParams)
+    playerStrategies = initPlayerStrategies(playParams),
+    gameStyle = playParams.gameStyle,
+    thePlayer = playParams.thePlayer
   }
 
   print("##### Game starts #####")
   while utils.moreThanOneHasDice(game) do
     if game.promise == nil then
-      if playParams.humanPlayer ~= nil then
+      if playParams.thePlayer ~= nil then
         print()
         print("Press return to continue.")
         io.read()
@@ -102,8 +117,8 @@ local function play (playParams)
     if nextPromise == nil then
       print("Player " .. game.playerInTurn .. " calls")
 
-      if playParams.humanPlayer ~= nil then
-        printGameState(game, true)
+      if playParams.thePlayer ~= nil then
+        printGameState(game, game.gameStyle ~= global.gameStyle.botVsHumans)
       end
 
       -- Count dices..

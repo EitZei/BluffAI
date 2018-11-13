@@ -1,6 +1,12 @@
 local star = "★"
 local diceValues = { 1, 2, 3, 4, 5, star }
 
+local gameStyle = {
+  humanVsBots = 1,
+  botVsHumans = 2,
+  onlyBots = 3
+}
+
 local function addAllDices (amount, board)
   for k, v in pairs(diceValues) do
     if (v ~= star) then
@@ -35,5 +41,6 @@ end
 return {
   star = star,
   diceValues = diceValues,
-  board = createBoard()
+  board = createBoard(),
+  gameStyle = gameStyle
 }
